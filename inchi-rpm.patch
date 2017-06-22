@@ -1,30 +1,163 @@
-diff -up INCHI-1-API/INCHI_API/gcc_so_makefile/makefile.r INCHI-1-API/INCHI_API/gcc_so_makefile/makefile
---- INCHI-1-API/INCHI_API/gcc_so_makefile/makefile.r	2011-08-03 15:45:06.000000000 +0200
-+++ INCHI-1-API/INCHI_API/gcc_so_makefile/makefile	2014-05-02 01:42:47.322481085 +0200
-@@ -62,7 +62,7 @@ endif
+--- INCHI-1-SRC/INCHI_API/libinchi/gcc/makefile.orig	2017-06-21 19:51:24.162061661 +0200
++++ INCHI-1-SRC/INCHI_API/libinchi/gcc/makefile	2017-06-21 19:53:20.892060327 +0200
+@@ -38,14 +38,14 @@
+ API_CALLER_PATHNAME = $(LIB_DIR)/$(API_CALLER_NAME)
+ # === Linker to create (Shared) InChI library ====
+ ifndef SHARED_LINK
+-  SHARED_LINK = gcc -shared
++  SHARED_LINK = $(CC) -shared
+ endif
+ # === Linker to create Main program =====
  ifndef LINKER
-   ifndef windir
    ifdef ISLINUX
--     LINKER_CWD_PATH = -Wl,-R,""
-+     LINKER_CWD_PATH = 
+-	 LINKER_CWD_PATH = -Wl,-R,""
++	 LINKER_CWD_PATH =
    endif
-   endif
-   LINKER = gcc -s $(LINKER_CWD_PATH)
-@@ -84,7 +84,7 @@ endif
- 
+-  LINKER = gcc -s $(LINKER_CWD_PATH)
++  LINKER = $(CC) $(LINKER_CWD_PATH)
+ endif
+ ifndef P_LIBR
+ 	P_LIBR = ../../libinchi/src/
+@@ -65,14 +65,14 @@
+ endif
+ # === C Compiler ===============
+ ifndef C_COMPILER
+-  C_COMPILER = gcc
++  C_COMPILER = $(CC)
+ endif
  # === C Compiler Options =======
  ifndef C_OPTIONS
--  C_OPTIONS = -ansi -O3 -c
-+  C_OPTIONS = -ansi $(OPTFLAGS) -c
-   ifndef windir
+   ifndef CALLER_IS_MOL2INCHI
+-	C_OPTIONS = -ansi -O3 -c
++	C_OPTIONS = -ansi $(OPTFLAGS) -c
+   else
+-	C_OPTIONS = -O3 -c  
++	C_OPTIONS = $(OPTFLAGS) -c  
+   endif
    ifdef ISLINUX
-     ifndef C_SO_OPTIONS
-@@ -213,7 +213,7 @@ $(INCHI_LIB_PATHNAME).so$(VERSION): $(IN
- 	$(SHARED_LINK) $(SHARED_LINK_PARM) -o \
-   $(INCHI_LIB_PATHNAME).so$(VERSION) \
-   $(INCHI_LIB_OBJS) \
--  -Wl$(LINUX_MAP)$(LINUX_Z_RELRO),-soname,$(INCHI_LIB_NAME).so$(MAIN_VERSION)
-+  -Wl$(LINUX_MAP)$(LINUX_Z_RELRO),-soname,$(INCHI_LIB_NAME).so$(MAIN_VERSION) -lm
- 	ln -fs $(INCHI_LIB_NAME).so$(VERSION) \
-   $(INCHI_LIB_PATHNAME).so$(MAIN_VERSION)
- 
+ 	ifndef C_SO_OPTIONS
+--- INCHI-1-SRC/INCHI_API/demos/inchi_main/gcc/makefile.orig	2017-01-17 14:40:34.000000000 +0100
++++ INCHI-1-SRC/INCHI_API/demos/inchi_main/gcc/makefile	2017-06-21 21:00:25.642014371 +0200
+@@ -30,22 +30,22 @@
+ # === Main program name ====
+ ifndef API_CALLER_NAME
+   ifndef CALLER_IS_MOL2INCHI 
+-  API_CALLER_NAME = inchi_main$
++  API_CALLER_NAME = inchi_main
+   else
+-  API_CALLER_NAME = mol2inchi$
++  API_CALLER_NAME = mol2inchi
+   endif
+ endif
+ API_CALLER_PATHNAME = $(LIB_DIR)/$(API_CALLER_NAME)
+ # === Linker to create (Shared) InChI library ====
+ ifndef SHARED_LINK
+-  SHARED_LINK = gcc -shared
++  SHARED_LINK = $(CC) -shared
+ endif
+ # === Linker to create Main program =====
+ ifndef LINKER
+   ifdef ISLINUX
+-	 LINKER_CWD_PATH = -Wl,-R,""
++	 LINKER_CWD_PATH =
+   endif
+-  LINKER = gcc -s $(LINKER_CWD_PATH)
++  LINKER = $(CC) $(LINKER_CWD_PATH)
+ endif
+ ifndef P_LIBR
+ 	P_LIBR = ../../../libinchi/src/
+@@ -65,14 +65,14 @@
+ endif
+ # === C Compiler ===============
+ ifndef C_COMPILER
+-  C_COMPILER = gcc
++  C_COMPILER = $(CC)
+ endif
+ # === C Compiler Options =======
+ ifndef C_OPTIONS
+   ifndef CALLER_IS_MOL2INCHI
+-	C_OPTIONS = -ansi -O3 -c
++	C_OPTIONS = -ansi $(OPTFLAGS) -c
+   else
+-	C_OPTIONS = -O3 -c  
++	C_OPTIONS = $(OPTFLAGS) -c  
+   endif
+   ifdef ISLINUX
+ 	ifndef C_SO_OPTIONS
+--- INCHI-1-SRC/INCHI_API/demos/mol2inchi/gcc/makefile.orig	2017-01-17 14:40:34.000000000 +0100
++++ INCHI-1-SRC/INCHI_API/demos/mol2inchi/gcc/makefile	2017-06-21 21:01:20.392013745 +0200
+@@ -30,22 +30,22 @@
+ # === Main program name ====
+ ifndef API_CALLER_NAME
+   ifndef CALLER_IS_MOL2INCHI 
+-  API_CALLER_NAME = inchi_main$
++  API_CALLER_NAME = inchi_main
+   else
+-  API_CALLER_NAME = mol2inchi$
++  API_CALLER_NAME = mol2inchi
+   endif
+ endif
+ API_CALLER_PATHNAME = $(LIB_DIR)/$(API_CALLER_NAME)
+ # === Linker to create (Shared) InChI library ====
+ ifndef SHARED_LINK
+-  SHARED_LINK = gcc -shared
++  SHARED_LINK = $(CC) -shared
+ endif
+ # === Linker to create Main program =====
+ ifndef LINKER
+   ifdef ISLINUX
+-	 LINKER_CWD_PATH = -Wl,-R,""
++	 LINKER_CWD_PATH =
+   endif
+-  LINKER = gcc -s $(LINKER_CWD_PATH)
++  LINKER = $(CC) $(LINKER_CWD_PATH)
+ endif
+ ifndef P_LIBR
+ 	P_LIBR = ../../../libinchi/src/
+@@ -65,14 +65,14 @@
+ endif
+ # === C Compiler ===============
+ ifndef C_COMPILER
+-  C_COMPILER = gcc
++  C_COMPILER = $(CC)
+ endif
+ # === C Compiler Options =======
+ ifndef C_OPTIONS
+   ifndef CALLER_IS_MOL2INCHI
+-	C_OPTIONS = -ansi -O3 -c
++	C_OPTIONS = -ansi $(OPTFLAGS) -c
+   else
+-	C_OPTIONS = -O3 -c
++	C_OPTIONS = $(OPTFLAGS) -c
+   endif
+   ifdef ISLINUX
+ 	ifndef C_SO_OPTIONS
+--- INCHI-1-SRC/INCHI_EXE/inchi-1/gcc/makefile.orig	2016-09-08 19:08:16.000000000 +0200
++++ INCHI-1-SRC/INCHI_EXE/inchi-1/gcc/makefile	2017-06-22 16:03:35.017897870 +0200
+@@ -13,7 +13,7 @@
+ 	CPP_COMPILER = g++
+ endif
+ ifndef LINKER
+-	LINKER = g++ -s
++	LINKER = $(C_COMPILER)
+ endif
+ ifndef INCHI_EXECUTABLE_NAME
+ 	ifdef windir
+@@ -36,14 +36,14 @@
+ endif
+ #P_INCL = -I$(P_MAIN) -I$(P_BASE)
+ P_INCL = -I$(P_MAIN) -I$(P_BASE)
+-C_COMPILER_OPTIONS = $(P_INCL) -ansi -DCOMPILE_ANSI_ONLY -DTARGET_EXE_STANDALONE -O3 -c
++C_COMPILER_OPTIONS = $(P_INCL) -ansi -DCOMPILE_ANSI_ONLY -DTARGET_EXE_STANDALONE $(OPTLAGS) -c
+ #C_COMPILER_OPTIONS = -c $(P_INCL) -ansi -O3 -fsigned-char -ffunction-sections -fexpensive-optimizations -fstack-check -fexceptions -Wall -pedantic -Wbad-function-cast -Wreturn-type -Wformat -Wuninitialized -Wcast-align -Wshadow -Wunused -Wunused-value -Wunused-variable -Wunused-function -Wunused-parameter -Wunused-label -Wcomment -Wcast-qual -Wconversion -Wimplicit-int -Wmissing-braces -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls -Wsign-compare -Wfloat-equal -Wstrict-prototypes -Wwrite-strings -Wundef -Waggregate-return -Wchar-subscripts -Wformat-nonliteral -Wnested-externs -Wsequence-point -Wpointer-arith -mfancy-math-387 -mieee-fp -mno-soft-float
+ ifdef windir
+ # no -ansi option due to reported MinGw bug
+-	CPP_COMPILER_OPTIONS = $(P_INCL) -D_LIB -DTARGET_EXE_STANDALONE -O3 -frtti -c
++	CPP_COMPILER_OPTIONS = $(P_INCL) -D_LIB -DTARGET_EXE_STANDALONE $(OPTLAGS) -frtti -c
+ 	#CPP_COMPILER_OPTIONS = -c $(P_INCL) -D_LIB -O3 -frtti -Wall -pedantic -Wreturn-type -Wformat -Wuninitialized -ffunction-sections -fexpensive-optimizations -fstack-check -fexceptions -Wcast-align -Wshadow -Wunused -Wunused-value -Wunused-variable -Wunused-function -fsigned-char -Wcast-qual -Wconversion -Wmissing-braces -Wredundant-decls -Wsign-compare -Wfloat-equal -Wwrite-strings -mfancy-math-387 -mieee-fp -mno-soft-float
+ else
+-	CPP_COMPILER_OPTIONS = $(P_INCL) -D_LIB -DTARGET_EXE_STANDALONE -ansi -O3 -frtti -c
++	CPP_COMPILER_OPTIONS = $(P_INCL) -D_LIB -DTARGET_EXE_STANDALONE -ansi $(OPTLAGS) -frtti -c
+ 	#CPP_COMPILER_OPTIONS = -c $(P_INCL) -D_LIB -ansi -O3 -frtti -Wall -pedantic -Wreturn-type -Wformat -Wuninitialized -ffunction-sections -fexpensive-optimizations -fstack-check -fexceptions -Wcast-align -Wshadow -Wunused -Wunused-value -Wunused-variable -Wunused-function -fsigned-char -Wcast-qual -Wconversion -Wmissing-braces -Wredundant-decls -Wsign-compare -Wfloat-equal -Wwrite-strings -mfancy-math-387 -mieee-fp -mno-soft-float
+ endif
+ #LINKER_OPTIONS = -static-libgcc

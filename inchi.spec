@@ -2,23 +2,24 @@
 # Conditional build:
 %bcond_without	tests		# build without tests
 
-%define inchi_so_ver 1.04.00
-%define url_ver 1.04
+%define inchi_so_ver 1.05.00
+%define url_ver 105
 Summary:	The IUPAC International Chemical Identifier library
 Summary(pl.UTF-8):	Biblioteka międzynarodowych identyfikatorów chemicznych IUPAC
 Name:		inchi
-Version:	1.0.4
-Release:	2
+Version:	1.05
+Release:	1
 License:	LGPL v2+
 Group:		Libraries
-Source0:	http://www.inchi-trust.org/fileadmin/user_upload/software/inchi-v%{url_ver}/INCHI-1-API.ZIP
-# Source0-md5:	8447bf108af12fe66eecba41bbc89918
-Source1:	http://www.inchi-trust.org/fileadmin/user_upload/software/inchi-v%{url_ver}/INCHI-1-DOC.ZIP
-# Source1-md5:	4b438cc7da7472577307a2063414c973
-Source2:	http://www.inchi-trust.org/fileadmin/user_upload/software/inchi-v%{url_ver}/INCHI-1-TEST.ZIP
-# Source2-md5:	8176b5e0e24c6aad78c522265378362e
+#Source0Download: http://www.inchi-trust.org/downloads/
+Source0:	http://www.inchi-trust.org/download/%{url_ver}/INCHI-1-SRC.zip
+# Source0-md5:	ccc497c7e6ced1521a6953d859e49af4
+Source1:	http://www.inchi-trust.org/download/%{url_ver}/INCHI-1-DOC.zip
+# Source1-md5:	7e40a7f8c0048dc2c63fd5a590a256df
+Source2:	http://www.inchi-trust.org/download/%{url_ver}/INCHI-1-TEST.zip
+# Source2-md5:	96800539d586f115b47baf245a8abdf3
 Patch0:		%{name}-rpm.patch
-URL:		http://www.inchi-trust.org/?q=node/14
+URL:		http://www.inchi-trust.org/
 BuildRequires:	dos2unix
 BuildRequires:	sed >= 4.0
 BuildRequires:	unzip
@@ -98,31 +99,38 @@ Ten pakiet zawiera dokumentację użytkownika do oprogramowania InChI
 oraz dokumentację API biblioteki InChI dla programistów.
 
 %prep
-%setup -q -n INCHI-1-API -a 1 -a 2
+%setup -q -n INCHI-1-SRC -a 1 -a 2
 %patch0 -p1
 
-%{__sed} -i -e 's,gcc,$(CC),' INCHI_API/gcc_so_makefile/makefile
-
-rm INCHI_API/gcc_so_makefile/result/{libinchi,inchi}*
-for file in INCHI_API/inchi_dll/inchi_api.h LICENCE readme.txt ; do
+for file in LICENCE readme.txt ; do
 	dos2unix -k $file
 done
 
 cd INCHI-1-TEST/test
 unzip -d reference -qq -a InChI_TestSet-result.zip
-sed -i -e 's,./inchi-1,../../INCHI_API/gcc_so_makefile/result/inchi_main,g' TestSet2InChI.sh
+for file in reference/its-*.txt ; do
+	dos2unix $file
+done
+%{__sed} -i -e 's,./inchi-1,../../INCHI_EXE/bin/Linux/inchi-1,g' TestSet2InChI.sh
 
 %build
-%{__make} -C INCHI_API/gcc_so_makefile \
+for project in libinchi demos/inchi_main demos/mol2inchi ; do
+%{__make} -C INCHI_API/${project}/gcc \
 	ISLINUX=1 \
 	CC="%{__cc}" \
 	OPTFLAGS="%{rpmcflags}"
+done
+
+%{__make} -C INCHI_EXE/inchi-1/gcc \
+	C_COMPILER="%{__cc}" \
+	LINKER="%{__cc}" \
+	OPTFLAGS="%{rpmcflags}"
 
 %if %{with tests}
-export LD_LIBRARY_PATH=$(pwd)/INCHI_API/gcc_so_makefile/result/
+export LD_LIBRARY_PATH=$(pwd)/INCHI_API/bin/Linux
 cd INCHI-1-TEST/test
 sh ./TestSet2InChI.sh
-for t in InChI_TestSet*.txt; do
+for t in its-*.txt; do
 	cmp $t reference/$t
 done
 %endif
@@ -130,11 +138,13 @@ done
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/inchi}
-install -pm 755 INCHI_API/gcc_so_makefile/result/inchi_main $RPM_BUILD_ROOT%{_bindir}/inchi-1
-install -p INCHI_API/gcc_so_makefile/result/libinchi.so.%{inchi_so_ver} $RPM_BUILD_ROOT%{_libdir}
+
+install -p INCHI_EXE/bin/Linux/inchi-1 $RPM_BUILD_ROOT%{_bindir}
+install -p INCHI_API/bin/Linux/mol2inchi $RPM_BUILD_ROOT%{_bindir}
+install -p INCHI_API/bin/Linux/libinchi.so.%{inchi_so_ver} $RPM_BUILD_ROOT%{_libdir}
 ln -s libinchi.so.%{inchi_so_ver} $RPM_BUILD_ROOT%{_libdir}/libinchi.so.1
 ln -s libinchi.so.1 $RPM_BUILD_ROOT%{_libdir}/libinchi.so
-install -pm644 INCHI_API/inchi_dll/inchi_api.h $RPM_BUILD_ROOT%{_includedir}/inchi
+cp -p INCHI_BASE/src/{inchi_api,ixa}.h $RPM_BUILD_ROOT%{_includedir}/inchi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -145,6 +155,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/inchi-1
+%attr(755,root,root) %{_bindir}/mol2inchi
 
 %files libs
 %defattr(644,root,root,755)
