@@ -86,9 +86,7 @@ Summary:	Documentation for the InChI library
 Summary(pl.UTF-8):	Dokumentacja do biblioteki InChI
 Group:		Documentation
 Requires:	%{name} = %{version}-%{release}
-%if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
-%endif
 
 %description doc
 This package contains user documentation for the InChI software and
