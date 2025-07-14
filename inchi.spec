@@ -98,7 +98,7 @@ oraz dokumentację API biblioteki InChI dla programistów.
 
 %prep
 %setup -q -n INCHI-1-SRC -a 1 -a 2
-%patch0 -p1
+%patch -P0 -p1
 
 for file in LICENCE readme.txt ; do
 	dos2unix -k $file
