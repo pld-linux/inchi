@@ -8,7 +8,7 @@ Summary:	The IUPAC International Chemical Identifier library
 Summary(pl.UTF-8):	Biblioteka międzynarodowych identyfikatorów chemicznych IUPAC
 Name:		inchi
 Version:	1.05
-Release:	1
+Release:	2
 License:	LGPL v2+
 Group:		Libraries
 #Source0Download: http://www.inchi-trust.org/downloads/
